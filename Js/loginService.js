@@ -21,30 +21,52 @@ function login(email, password){
 
     let message = ''
     let alertType = ''
+    localStorage.removeItem('token')
 
-    fetch("htpps://reqres.in/api/login", {
+    fetch("https://reqres.in/api/login", {
         method: "POST",
         headers: {
-            "Content-type": "application/json"
+            "Content-type": "application/json",
+            'x-api-key': 'reqres-free-v1'
         },
         body: JSON.stringify({ email, password}),
     })
 
-    .then((data) => {
-        alertType = 'success'
-        message = 'Inicio de sesion exitosa.'; 
+    .then((response) => {
+        if (response.status == 200) {
+            alertType = 'success'
+            message = 'Inicio de sesion exitosa.';
+            console.log('responde bien' + response)   
+            alertBuilder(alertType, message)
+            localStorage.setItem('token', 'sassedd4455544444')
+            setTimeout(() => {
+                location.href = 'admin/dashboard.html'
+            }, 2000) //10000 miliseconds
+        }
+        else{
+            alertType = 'danger'
+            message = 'Correo o contraseña incorrectos.';
+            alertBuilder(alertType, message)
+        }
     })
 
     .catch((error) => {
         alertType = 'danger'
-        message = 'Correo o contraseña incorrectos.';
+        message = 'Error inesperado';
         console.error(error)
+        alertBuilder(alertType, message)
     })
 
-    let alert = `<div class="alert alert-${alertType} alert-dismissible fade show " role="alert">
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>`;
-    document.getElementById('alert').innerHTML = alert;
 
+}
+
+function alertBuilder(alertType, message){
+    const alert = `
+        <div class="alert alert-${alertType} alert-dismissible fade show " role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+
+    document.getElementById('alert').innerHTML = alert;
 }
